@@ -9,7 +9,7 @@ Hanping Chinese Dictionary on Google Play: https://play.google.com/store/apps/de
 <head>
 <link rel="stylesheet" href="style.css">
 </head>
-<a class=hanzi>{{Simplified}}</a><br><br>{{#Pinyin}}<a class=phonetic>{{Pinyin}}</a>{{/Pinyin}}<br><br><span class=meaning>{{Meaning}}</span><br><br>
+<a class=hanzi>{{Simplified}}</a><br><br>{{#Pinyin}}<a class=phonetic>{{Pinyin}}</a>{{/Pinyin}}<br><br><span class=meaning>{{Meaning}}</span><br><br><span class=sentence>{{Meaning}}</span><br><br>
 <script>
 
 var DEBUG = 0;
@@ -17,6 +17,7 @@ var traditional = DEBUG ? '疆域' : '{{Traditional}}';
 var simplified = DEBUG ? '疆域' : '{{Simplified}}';
 var pinyin = DEBUG ? 'jiang1 yu4' : '{{Pinyin}}';
 var meaning = DEBUG ? 'territory' : '{{Meaning}}';
+var sentence = DEBUG ? 'Some sentence' : '{{Example sentence}}';
 
 function readPref(langCode, prefNameWithoutLangCode, defaultValue) {
   var prefix = '.' + langCode + '_' + prefNameWithoutLangCode + '.';
@@ -255,7 +256,13 @@ function toMeaning(langCode, rawMeaning, hideTones) {
   return result;
 }
 
+function toSentence(langCode, rawSentence) {
+  return rawSentence;
+}
+
+
 document.getElementsByClassName('hanzi')[0].innerHTML=toHanzi('cmn', traditional, simplified, true);
 document.getElementsByClassName('phonetic')[0].innerHTML=toPhonetic('cmn', pinyin, true);
 document.getElementsByClassName('meaning')[0].innerHTML=toMeaning('cmn', meaning, false);
+document.getElementsByClassName('sentence')[0].innerHTML=toSentence('cmn', sentence);
 </script>
