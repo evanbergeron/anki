@@ -25,7 +25,15 @@ var number = DEBUG ? '420' : '{{Number}}';
 function toHanzi(trad, simp) {
     // TODO
     console.log(trad);
-    return trad;
+    if (!trad)
+    {
+        return '[' + simp + ']';
+    }
+    if (!simp)
+    {
+        return trad;
+    }
+    return trad + ' [' + simp + ']';
 }
 
 var toneCharMap = {};
