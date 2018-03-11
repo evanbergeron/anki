@@ -1,0 +1,119 @@
+<head>
+<link rel='stylesheet' href='style.css'>
+</head>
+<a class=keyword>{{Keyword}}</a><br>
+<a class=hanzi>{{Traditional}} [{{Simplified}}]</a><br>
+<a class=phonetic>{{Pinyin}}</a><br>
+<a class=words>{{Containing words}}</a><br>
+<a class=radical>{{Radical}}<br></a>
+<a class=mnemonic>{{Mnemonic}}</a>
+<script>
+
+var DEBUG = 0;
+
+var keyword = DEBUG ? 'electricity' : '{{Keyword}}';
+var traditional = DEBUG ? '電' : '{{Traditional}}';
+var simplified = DEBUG ? '电' : '{{Simplified}}';
+var pinyin = DEBUG ? 'dian4' : '{{Pinyin}}';
+var words = DEBUG ? '电影的电' : '{{Containing words}}';
+var radical  = DEBUG ? '雨' : '{{Radical}}';
+// var radical  = DEBUG ? '' : '{{Radical}}';
+var mnemonic = DEBUG ? 'Your mnemonic here' : '{{Mnemonic}}';
+var characters  = DEBUG ? 'None' : '{{Containing characters}}';
+var number = DEBUG ? '420' : '{{Number}}';
+
+function toHanzi(trad, simp) {
+    // TODO
+    console.log(trad);
+    return trad;
+}
+
+var toneCharMap = {};
+toneCharMap['a']='āáǎà';
+toneCharMap['e']='ēéěè';
+toneCharMap['i']='īíǐì';
+toneCharMap['o']='ōóǒò';
+toneCharMap['u']='ūúǔù';
+toneCharMap['ü']='ǖǘǚǜ';
+toneCharMap['m']=' ḿ  ';
+toneCharMap['n']=' ńňǹ';
+
+function toMarkedPinyinSyllable(tonelessPinyin, toneNum) {
+  if (toneNum < 1 || toneNum > 5 || tonelessPinyin.length < 1) {
+    return tonelessPinyin + toneNum; // not real pinyin
+  }
+  tonelessPinyin = tonelessPinyin.replace('v', 'ü');
+  if (toneNum === 5) {
+    return tonelessPinyin;
+  }
+  var charToReplace;
+  var vowels = tonelessPinyin.replace(/[^aeiouü]/g, '');
+  switch (vowels.length) {
+    case 0:
+      charToReplace = tonelessPinyin.charAt(0);
+      break;
+    case 1:
+      charToReplace = vowels.charAt(0);
+      break;
+    default:
+      if (vowels.indexOf('a') >= 0) {
+        charToReplace = 'a';
+      }
+      else if (vowels.indexOf('e') >= 0) {
+        charToReplace = 'e';
+      }
+      else if (vowels.indexOf('ou') >= 0) {
+        charToReplace = 'o';
+      }
+      else {
+        charToReplace = vowels.charAt(1);
+      }
+  }
+  var tonesStr = toneCharMap[charToReplace];
+  var replacementChar = tonesStr === null ? null : tonesStr.charAt(toneNum - 1);
+  if (replacementChar === null || replacementChar === ' ') {
+    return tonelessPinyin + toneNum;
+  }
+  else {
+    return tonelessPinyin.replace(charToReplace, replacementChar);
+  }
+}
+
+function toPhonetic(numberedPinyin) {
+  var remainingText = numberedPinyin;
+  var result = '';
+  var patt = /\b([a-z]{1,6})([1-5])\b/i;
+  var match;
+  while (match = patt.exec(remainingText)) {
+    var tonelessSyllable = match[1];
+    var toneNum = match[2];
+    var newSyllable = toMarkedPinyinSyllable(tonelessSyllable, toneNum);
+    result += remainingText.substring(0, match.index);
+    if (!newSyllable) {
+      result += match[1] + match[2];
+    }
+    result += newSyllable;
+    remainingText = remainingText.substr(match.index + match[0].length);
+  }
+  return result + remainingText;
+}
+
+// TODO abstract optional fields.
+function toRadical(rawRadical) {
+  if (!rawRadical)
+  {
+      return ''; 
+  }
+  return '部首: ' + rawRadical + '<br>';
+}
+
+document.getElementsByClassName('keyword')[0].innerHTML=keyword;
+document.getElementsByClassName('hanzi')[0].innerHTML=toHanzi(traditional, simplified);
+document.getElementsByClassName('phonetic')[0].innerHTML=toPhonetic(pinyin);
+document.getElementsByClassName('words')[0].innerHTML=words;
+document.getElementsByClassName('radical')[0].innerHTML=toRadical(radical);
+document.getElementsByClassName('mnemonic')[0].innerHTML=mnemonic;
+
+// document.getElementsByClassName('meaning')[0].innerHTML=toMeaning('cmn', meaning, false);
+// document.getElementsByClassName('sentence')[0].innerHTML=toSentence('cmn', sentence);
+</script>

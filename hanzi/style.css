@@ -1,0 +1,35 @@
+.card {
+ font-family: arial;
+ font-size: 20px;
+ text-align: center;
+ color: black;
+ background-color: white;
+}
+
+/* TODO smallcaps */
+.keyword {
+ font-family: arial;
+ font-size: 20px;
+ text-align: center;
+ color: black;
+ background-color: white;
+}
+
+.hanzi {
+ font-family: sentypea;
+ font-size: 60px;
+ text-align: center;
+ color: black;
+ background-color: white;
+}
+
+.trad {
+ font-family: arial;
+ font-size: 29px;
+ text-align: center;
+ color: black;
+ background-color: white;
+}
+
+@font-face { font-family: sentypea; src: url('_sentypea.ttf'); }
+@font-face { font-family: semicursive; src: url('_semicursive.ttf'); }
