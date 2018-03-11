@@ -1,28 +1,42 @@
 <!--
 "Hanping Chinese Templates for Anki" by EmberMitre is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.
 
+Edited by Evan.
+
 Hanping Chinese Dictionary on Google Play: https://play.google.com/store/apps/details?id=com.embermitre.hanping.app.pro
 -->
 
 <head>
 <link rel="stylesheet" href="style.css">
 </head>
-
-    <a class=hanzi>{{Simplified}}</a>
-    <br>
-    <br>
-
-    <a class=phonetic>{{Pinyin}}</a>
-    <br>
-    <br>
-    <span class=meaning>{{Meaning}}</span><br>
-    <br>
-
+<a class=hanzi>{{Simplified}}</a><br><br>{{#Pinyin}}<a class=phonetic>{{Pinyin}}</a>{{/Pinyin}}<br><br><span class=meaning>{{Meaning}}</span><br><br>
 <script>
-var traditional = '疆域'
-var simplified = '疆域'
-var pinyin = 'jiang1 yu4'
-var meaning = 'territory'
+
+var DEBUG = 0;
+var traditional = DEBUG ? '疆域' : '{{Traditional}}';
+var simplified = DEBUG ? '疆域' : '{{Simplified}}';
+var pinyin = DEBUG ? 'jiang1 yu4' : '{{Pinyin}}';
+var meaning = DEBUG ? 'territory' : '{{Meaning}}';
+
+function readPref(langCode, prefNameWithoutLangCode, defaultValue) {
+  var prefix = '.' + langCode + '_' + prefNameWithoutLangCode + '.';
+  for (var ss in document.styleSheets) {
+    if (!ss) {
+      continue;
+    }
+    var classes = ss.rules || ss.cssRules;
+    if (!classes) {
+      continue;
+    }
+    for (var cls in classes) {
+      if (cls && cls.selectorText && cls.selectorText.indexOf(prefix) === 0) {
+        return cls.selectorText.substr(prefix.length);
+      }
+    }
+  }
+  return defaultValue;
+}
+
 
 function readHanziTypePref(langCode) {
   var defaultValue = langCode === 'yue' ? 'trad' : 'simp_trad';
@@ -31,34 +45,12 @@ function readHanziTypePref(langCode) {
 
 function readPhoneticTypePref(langCode) {
   var defaultValue = langCode === 'yue' ? 'jyutping_superscript' : 'pinyin_marked';
+  return 'pinyin_marked';
   return readPref(langCode, 'phonetic_type', defaultValue);
 }
 
 function readColoringStrategyPref(langCode) {
   return readPref(langCode, 'coloring_strategy', 'hanzi');
-}
-
-function readPref(langCode, prefNameWithoutLangCode, defaultValue) {
-  var prefix = '.' + langCode + '_' + prefNameWithoutLangCode + '.';
-  for (var ss in document.styleSheets) {
-    if (!ss) {
-      continue;
-    } else {
-        console.log(ss);
-    }
-    var classes = ss.rules || ss.cssRules;
-    if (!classes) {
-      continue;
-    }
-    for (var cls in classes) {
-      if (cls && cls.selectorText && cls.selectorText.indexOf(prefix) === 0) {
-          // console.log(cls.selectorText.substr(prefix.length));
-        return cls.selectorText.substr(prefix.length);
-      }
-    }
-  }
-    // console.log(defaultValue);
-  return defaultValue;
 }
 
 function toHanzi(langCode, trad, simp, hideTones) {
@@ -140,7 +132,6 @@ function toPhonetic(langCode, pinyinNumbered, hideTones) {
   }
   var phoneticType = readPhoneticTypePref(supportedLangCode);
   var coloringEnabled = readColoringStrategyPref(supportedLangCode) === 'phonetic';
-  // console.log(coloringEnabled);
   if (phoneticType === 'none') {
     return '<div class=play_button><div class=play_icon></div></div>';
   }
@@ -151,12 +142,14 @@ function toPhonetic(langCode, pinyinNumbered, hideTones) {
   else {
     toneStyle = phoneticType.indexOf('marked') >= 0 ? 1 : 0;
   }
+  toneStyle = 1; // TODO(evan) hardcoding
   var showColoring = toneStyle >= 0 && coloringEnabled;
+  showColoring = true;
   var remainingText = pinyinNumbered;
   var result = '';
   var patt = /\b([a-z]{1,6})([1-5])\b/i;
   var match;
-  while (match === patt.exec(remainingText)) {
+  while (match = patt.exec(remainingText)) {
     var tonelessSyllable = match[1];
     var toneNum = match[2];
     var newSyllable = toPinyinSyllable(tonelessSyllable, toneNum, toneStyle);
